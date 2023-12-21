@@ -1,4 +1,4 @@
-import { IsMongoId, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsMongoId, IsNotEmpty,IsOptional,IsString } from "class-validator";
 export class CreateProductDto {
     @IsString()
     @IsNotEmpty()
@@ -17,13 +17,11 @@ export class CreateProductDto {
     quantity: number;
 
     @IsOptional()
-    @IsString()
     imageCover: string;
 
     @IsOptional()
-    @IsString()
     images: string[];
-
+    
     @IsMongoId()
     @IsNotEmpty()
     category: string;

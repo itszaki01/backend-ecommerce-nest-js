@@ -7,7 +7,6 @@ export class SlugifyPipe implements PipeTransform {
     transform(value: any, metadata: ArgumentMetadata) {
       if (value?.title) value.slug = slugify(value.title);
       if (value?.name) value.slug = slugify(value.name);
-      console.log(value);
       return value;
     }
 }

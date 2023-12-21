@@ -1,42 +1,19 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { CreateProductDto } from "./dto/create-product.dto";
 import { UpdateProductDto } from "./dto/update-product.dto";
 import * as factory from "../../utils/handlersFactory";
 import { Product } from "./schema/product.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { CategoriesService } from "../categories/categories.service";
-import { SubCategoriesService } from "../sub-categories/sub-categories.service";
-
+import { uploadOne } from "src/utils/uploadOne";
+import { deleteOne } from "src/utils/deleteOne";
 @Injectable()
 export class ProductsService {
-    constructor(
-        @InjectModel(Product.name) private ProductModel: Model<Product>,
-        private readonly categoriesService: CategoriesService,
-        private readonly subCategoriesService: SubCategoriesService
-    ) {}
+    constructor(@InjectModel(Product.name) private ProductModel: Model<Product>) {}
 
-    async create(createProductDto: CreateProductDto) {
-        const { category, subCategories } = createProductDto;
-        //1:Validate Category is Exist
-        await this.categoriesService.findOne(category);
-        //2:Validate SubCategories is They Exist
-        if (subCategories.length >= 1) {
-            const subCategoriesArray = await Promise.all(
-                subCategories.map(async (SubCategoryId) => {
-                    return await this.subCategoriesService.findOne(SubCategoryId);
-                })
-            );
-            //2.1: Check is SubCtegories belong the Category
-            subCategoriesArray.map((subCategory) => {
-                if (subCategory.category.toString() !== category) {
-                    throw new BadRequestException(`SubCategory (${subCategory._id}) is not belong Category (${category})`);
-                }
-            });
-        }
-
-        //3:Careate
-        return "check";
+    async create(createProductDto: CreateProductDto, imageCover: Express.Multer.File) {
+        const imageName = await uploadOne(imageCover, "products");
+        createProductDto.imageCover = imageName;
         return await factory.create(this.ProductModel, createProductDto);
     }
 
@@ -48,7 +25,15 @@ export class ProductsService {
         return await factory.findOne(this.ProductModel, id);
     }
 
-    async update(id: string, updateProductDto: UpdateProductDto) {
+    async update(id: string, updateProductDto: UpdateProductDto, imageCover: Express.Multer.File) {
+        //1:check if there image to update
+        if (imageCover) {
+            updateProductDto.imageCover = await uploadOne(imageCover, "products");
+            //1.1:delete old imageCover
+            const product = await this.findOne(id)
+            deleteOne(`uploads/products/${product.imageCover}`)
+        }
+
         return await factory.update(this.ProductModel, id, updateProductDto);
     }
 
