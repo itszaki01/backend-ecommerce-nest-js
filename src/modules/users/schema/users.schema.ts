@@ -3,7 +3,7 @@ import { HydratedDocument } from "mongoose";
 
 export type UserDocument = HydratedDocument<User>;
 
-@Schema({ timestamps: true })
+@Schema({ timestamps: true, toJSON: { versionKey: true } })
 export class User {
     @Prop({
         required: [true, "Name is required"],
@@ -25,10 +25,10 @@ export class User {
     })
     email: string;
 
-    @Prop({ select: false, required: [true, "Password is required"] })
+    @Prop({ required: [true, "Password is required"] })
     password: string;
 
-    @Prop({ default: new Date(Date.now()), select: false })
+    @Prop({ default: new Date(Date.now()) })
     passwordChangedAt: Date;
 
     @Prop()
@@ -44,8 +44,21 @@ export class User {
     //         ref: "Product",
     //     },
     // ],
-    @Prop()
+
+
+    @Prop({
+        type: [
+            {
+                alias: "string",
+                details: "string",
+                phone: "string",
+                city: "string",
+                postalCode: "string",
+            },
+        ],
+    })
     addresses: {
+        _id:string
         alias: string;
         details: string;
         phone: string;

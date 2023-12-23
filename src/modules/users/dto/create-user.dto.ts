@@ -1,4 +1,5 @@
-import { IsArray, IsEmail, IsNotEmpty, IsOptional, IsPhoneNumber, IsString } from "class-validator";
+import { IsEmail, IsEmpty, IsNotEmpty, IsOptional, IsPhoneNumber, IsString } from "class-validator";
+import { AddAddressDto } from "./add-address.dto";
 
 export class CreateUserDto {
     @IsNotEmpty()
@@ -18,6 +19,10 @@ export class CreateUserDto {
     @IsString()
     password: string;
 
+    @IsNotEmpty()
+    @IsString()
+    passwordConfirm: string;
+
     @IsOptional()
     @IsString()
     profileImg: string;
@@ -27,20 +32,9 @@ export class CreateUserDto {
     @IsOptional()
     phone: string;
 
-    // wishlist: [
-    //     {
-    //         type: mongoose.Schema.Types.ObjectId,
-    //         ref: "Product",
-    //     },
-    // ],
-    
-    @IsArray()
-    @IsOptional()
-    addresses: {
-        alias: string;
-        details: string;
-        phone: string;
-        city: string;
-        postalCode: string;
-    }[];
+    @IsEmpty()
+    passwordChangedAt: Date;
+
+    @IsEmpty()
+    addresses:AddAddressDto[]
 }

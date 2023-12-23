@@ -5,14 +5,14 @@ import * as factory from "../../utils/handlersFactory";
 import { Product } from "./schema/product.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { uploadOne } from "src/utils/uploadOne";
-import { deleteOne } from "src/utils/deleteOne";
+import { uploadOneFile } from "src/utils/uploadOneFile";
+import { deleteOneFile } from "src/utils/deleteOneFile";
 @Injectable()
 export class ProductsService {
     constructor(@InjectModel(Product.name) private ProductModel: Model<Product>) {}
 
     async create(createProductDto: CreateProductDto, imageCover: Express.Multer.File) {
-        const imageName = await uploadOne(imageCover, "products");
+        const imageName = await uploadOneFile(imageCover, "products");
         createProductDto.imageCover = imageName;
         return await factory.create(this.ProductModel, createProductDto);
     }
@@ -28,10 +28,10 @@ export class ProductsService {
     async update(id: string, updateProductDto: UpdateProductDto, imageCover: Express.Multer.File) {
         //1:check if there image to update
         if (imageCover) {
-            updateProductDto.imageCover = await uploadOne(imageCover, "products");
+            updateProductDto.imageCover = await uploadOneFile(imageCover, "products");
             //1.1:delete old imageCover
             const product = await this.findOne(id)
-            deleteOne(`uploads/products/${product.imageCover}`)
+            deleteOneFile(`uploads/products/${product.imageCover}`)
         }
 
         return await factory.update(this.ProductModel, id, updateProductDto);

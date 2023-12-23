@@ -15,8 +15,8 @@ export class SubCategoriesService {
         return await factory.create(this.subCategoryModel, createSubCategoryDto);
     }
 
-    async findAll() {
-        return await factory.findAll(this.subCategoryModel);
+    async findAll(filterObj?:object) {
+        return await factory.findAll(this.subCategoryModel,filterObj);
     }
 
     async findOne(id: string) {

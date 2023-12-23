@@ -1,8 +1,8 @@
 import { NotFoundException } from "@nestjs/common";
-import { Model } from "mongoose";
+import { HydratedDocument, Model } from "mongoose";
 
-export const findAll = async <T>(ModelSchema: Model<T>) => {
-    const data = await ModelSchema.find();
+export const findAll = async <T>(ModelSchema: Model<T>, filterObj: object = {}) => {
+    const data = await ModelSchema.find(filterObj);
     if (!data) {
         throw new NotFoundException(`${ModelSchema.modelName}s not found`);
     }
@@ -25,11 +25,17 @@ export const update = async <T, UpdateDto>(ModelSchema: Model<T>, id: string, pa
     return data;
 };
 
-export const findOne = async <T>(ModelSchema: Model<T>, id: string) => {
-    const data = await ModelSchema.findById(id);
-    if (!data) {
-        throw new NotFoundException(`${ModelSchema.modelName} (${id}) not found`);
+export const findOne = async <T>(ModelSchema: Model<T>, payload: string | object, findType?: "payload") => {
+    let data: HydratedDocument<T>;
+    if (findType === "payload") {
+        data = await ModelSchema.findOne(payload as object);
+    } else {
+        data = await ModelSchema.findById(payload);
+        if (!data) {
+            throw new NotFoundException(`${ModelSchema.modelName} (${payload}) not found`);
+        }
     }
+
     return data;
 };
 

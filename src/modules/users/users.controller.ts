@@ -1,38 +1,45 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { ParseMongoIdPipe } from '../mongo/pipes/parse-mongo-id.pipe';
-import { ExcludePasswordInterceptor } from './interceptors/exclude-password.interceptor';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UsePipes, UseInterceptors, ClassSerializerInterceptor } from "@nestjs/common";
+import { UsersService } from "./users.service";
+import { CreateUserDto } from "./dto/create-user.dto";
+import { UpdateUserDto } from "./dto/update-user.dto";
+import { ParseMongoIdPipe } from "../mongo/pipes/parse-mongo-id.pipe";
+import { CheckEmailIsUniquePipe } from "src/common/pipes/check-email-is-unique.pipe";
+import { CheckPasswordIsMatchPipe } from "src/common/pipes/check-password-is-match.pipe";
+import { UserResponseDto } from "./dto/user-response.dto";
+import { Auth } from "../auth/decorators/auth.decorator";
 
-
-@Controller('users')
+@Controller("users")
+@UseInterceptors(ClassSerializerInterceptor)
+@Auth("admin")
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+    constructor(private readonly usersService: UsersService) {}
+    @Post()
+    @UsePipes(CheckEmailIsUniquePipe, CheckPasswordIsMatchPipe)
+    async create(@Body() createUserDto: CreateUserDto): Promise<UserResponseDto> {
+        const user = await this.usersService.create(createUserDto);
+        return new UserResponseDto(user);
+    }
 
-  @UseInterceptors(ExcludePasswordInterceptor)
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
-  }
+    @Get()
+    async findAll(): Promise<UserResponseDto[]> {
+        const users = await this.usersService.findAll();
+        return users.map((user) => new UserResponseDto(user));
+    }
 
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
-  }
+    @Get(":userId")
+    async findOne(@Param("userId", ParseMongoIdPipe) userId: string): Promise<UserResponseDto> {
+        const user = await this.usersService.findOne(userId);
+        return new UserResponseDto(user);
+    }
 
-  @Get(':userId')
-  findOne(@Param('userId',ParseMongoIdPipe) userId: string) {
-    return this.usersService.findOne(userId);
-  }
+    @Patch(":userId")
+    async update(@Param("userId", ParseMongoIdPipe) userId: string, @Body() updateUserDto: UpdateUserDto): Promise<UserResponseDto> {
+        const user = await this.usersService.update(userId, updateUserDto);
+        return new UserResponseDto(user);
+    }
 
-  @Patch(':userId')
-  update(@Param('userId',ParseMongoIdPipe) userId: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(userId, updateUserDto);
-  }
-
-  @Delete(':userId')
-  remove(@Param('userId',ParseMongoIdPipe) userId: string) {
-    return this.usersService.remove(userId);
-  }
+    @Delete(":userId")
+    remove(@Param("userId", ParseMongoIdPipe) userId: string) {
+        return this.usersService.remove(userId);
+    }
 }
