@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import mongoose, { HydratedDocument } from "mongoose";
 import { Category } from "src/modules/categories/schema/category.schema";
-import { User } from "src/modules/users/schema/users.schema";
 
 export type SubCategoryDocument = HydratedDocument<SubCategory>;
 
@@ -20,7 +19,7 @@ export class SubCategory {
     })
     slug: string;
 
-    @Prop({ required: [true, "Category is required"], type: mongoose.Schema.Types.ObjectId, ref: User.name })
+    @Prop({ required: [true, "Category is required"], type: mongoose.Schema.Types.ObjectId, ref: Category.name })
     category: Category;
 }
 export const SubCategorySchema = SchemaFactory.createForClass(SubCategory);

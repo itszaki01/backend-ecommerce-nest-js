@@ -9,8 +9,14 @@ import { APP_FILTER } from "@nestjs/core";
 import { AllExceptionsFilter } from "./common/filters/all-exceptions.filter";
 import { BrandsModule } from "./modules/brands/brands.module";
 import { ConfigModule } from "@nestjs/config";
-import { AuthModule } from './modules/auth/auth.module';
-import { AdressessModule } from './modules/adressess/adressess.module';
+import { AuthModule } from "./modules/auth/auth.module";
+import { UsersAddressesModule } from "./modules/users-addresses/users-addresses.module";
+import { UsersWishListModule } from "./modules/users-wish-list/users-wish-list.module";
+import { UsersLoggedinModule } from "./modules/users-loggedin/users-loggedin.module";
+import { ProductsReviewsModule } from './modules/products-reviews/products-reviews.module';
+import { CouponsModule } from './modules/coupons/coupons.module';
+import { CartsModule } from './modules/carts/carts.module';
+import { OrdersModule } from './modules/orders/orders.module';
 
 @Module({
     imports: [
@@ -21,9 +27,15 @@ import { AdressessModule } from './modules/adressess/adressess.module';
         SubCategoriesModule,
         ProductsModule,
         BrandsModule,
-        ConfigModule.forRoot({ envFilePath: ".development.env", isGlobal: true }),
         AuthModule,
-        AdressessModule,
+        UsersAddressesModule,
+        UsersWishListModule,
+        UsersLoggedinModule,
+        ConfigModule.forRoot({ envFilePath: ".development.env", isGlobal: true }),
+        ProductsReviewsModule,
+        CouponsModule,
+        CartsModule,
+        OrdersModule,
     ],
     providers: [{ provide: APP_FILTER, useClass: AllExceptionsFilter }],
 })

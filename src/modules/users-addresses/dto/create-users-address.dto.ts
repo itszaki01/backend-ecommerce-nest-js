@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsString } from "class-validator";
 
-export class AddAddressDto {
+export class CreateUsersAddressDto {
     @IsNotEmpty()
     @IsString()
     alias: string;

@@ -6,7 +6,7 @@ import { Category, CategorySchema } from "./schema/category.schema";
 import { SubCategoriesModule } from "../sub-categories/sub-categories.module";
 
 @Module({
-    imports: [MongooseModule.forFeature([{ name: Category.name, schema: CategorySchema }]), forwardRef(() => SubCategoriesModule)],
+    imports: [forwardRef(() => SubCategoriesModule),MongooseModule.forFeature([{ name: Category.name, schema: CategorySchema }])],
     controllers: [CategoriesController],
     providers: [CategoriesService],
     exports: [CategoriesService],

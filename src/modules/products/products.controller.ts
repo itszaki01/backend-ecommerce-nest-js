@@ -7,11 +7,19 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { ValidateCategoryPipe } from "src/common/pipes/validate-category.pipe";
 import { ValidateSubCategoriesPipe } from "src/common/pipes/validate-sub-categories.pipe";
 import { ValidateOneImagePipe } from "src/common/pipes/validate-one-image.pipe";
+import { Auth } from "../auth/decorators/auth.decorator";
+import { _User } from "../users/decorators/user.decorator";
+import { ProductsReviewsService } from "../products-reviews/products-reviews.service";
+import { CreateProductsReviewDto } from "../products-reviews/dto/create-products-review.dto";
+import { User } from "../users/schema/users.schema";
 
 @UsePipes(ValidateCategoryPipe, ValidateSubCategoriesPipe)
 @Controller("products")
 export class ProductsController {
-    constructor(private readonly productsService: ProductsService) {}
+    constructor(
+        private readonly productsService: ProductsService,
+        private readonly productReviewsService: ProductsReviewsService
+    ) {}
 
     @Post()
     @UseInterceptors(FileInterceptor("imageCover"))
@@ -22,6 +30,19 @@ export class ProductsController {
     @Get()
     findAll() {
         return this.productsService.findAll();
+    }
+
+    // Neasted Routes (Reviews)
+    @Get(":productId/products-reviews")
+    getProductReviews(@Param("productId", ParseMongoIdPipe) productId: string) {
+        return this.productReviewsService.findAll({ product: productId });
+    }
+
+    @Post(":productId/products-reviews")
+    @Auth("user")
+    async createReviewForProduct(@Body() createReviewDto: CreateProductsReviewDto, @_User() user: User & { _id: string }) {
+        createReviewDto.user = String(user._id);
+        return await this.productReviewsService.create(createReviewDto);
     }
 
     @Get(":productId")

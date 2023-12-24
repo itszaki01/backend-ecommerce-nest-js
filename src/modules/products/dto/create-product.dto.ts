@@ -1,4 +1,5 @@
-import { IsMongoId, IsNotEmpty,IsOptional,IsString } from "class-validator";
+import { Transform } from "class-transformer";
+import { IsMongoId, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 export class CreateProductDto {
     @IsString()
     @IsNotEmpty()
@@ -7,6 +8,10 @@ export class CreateProductDto {
     @IsString()
     @IsNotEmpty()
     slug: string;
+
+    @IsNumber()
+    @Transform(({value})=> Number(value))
+    price:number
 
     @IsNotEmpty()
     @IsString()
@@ -19,14 +24,11 @@ export class CreateProductDto {
     @IsOptional()
     imageCover: string;
 
-    @IsOptional()
-    images: string[];
-    
     @IsMongoId()
     @IsNotEmpty()
     category: string;
 
     @IsMongoId({ each: true })
-    @IsNotEmpty({ each: true,message:'Please select at least 1 SubCategory' })
+    @IsNotEmpty({ each: true, message: "Please select at least 1 SubCategory" })
     subCategories: string[];
 }

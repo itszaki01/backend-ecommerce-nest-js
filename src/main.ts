@@ -6,9 +6,11 @@ import { SlugifyPipe } from "./common/pipes/slugify.pipe";
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
+    
     app.useGlobalPipes(new SlugifyPipe(),new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
 
     app.useGlobalInterceptors(new WarpDataInterceptor());
+
     //Rejection Handler
     process.on("unhandledRejection", (err: Error) => {
         console.log(

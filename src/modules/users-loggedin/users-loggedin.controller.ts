@@ -1,36 +1,36 @@
 import { BadRequestException, Body, ClassSerializerInterceptor, Controller, Get, Patch, UseInterceptors } from "@nestjs/common";
 import { CheckPasswordIsMatchPipe } from "src/common/pipes/check-password-is-match.pipe";
 import { Auth } from "../auth/decorators/auth.decorator";
-import { _User } from "./decorators/user.decorator";
+import { _User } from "../users/decorators/user.decorator";
 import { ChangeMyPasswordDto } from "./dto/change-my-passwoed.dto";
-import { UserResponseDto } from "./dto/user-response.dto";
-import { User } from "./schema/users.schema";
-import { UsersService } from "./users.service";
+import { UserResponseDto } from "../users/dto/user-response.dto";
+import { User } from "../users/schema/users.schema";
+import { UsersService } from "../users/users.service";
 import * as bcrypt from "bcrypt";
 import { CheckEmailIsUniquePipe } from "src/common/pipes/check-email-is-unique.pipe";
-import { UpdateMeDto } from "./dto/update-me.dto";
 import { TokenService } from "src/common/services/token.service";
-import { mongoObjParse } from "src/utils/mongoObjParser";
+import { UpdateUsersLoggedinDto } from "./dto/update-users-loggedin.dto";
 ("../../utils/mongoObjParser");
-@Controller("me")
+
+@Controller("users-loggedin")
 @Auth("all")
 @UseInterceptors(ClassSerializerInterceptor)
-export class UsersLoggedController {
+export class UsersLoggedinController {
     constructor(
         private readonly usersService: UsersService,
         private readonly tokenService: TokenService
     ) {}
 
     @Get()
-    async getMyProfile(@_User() { _id: userId }: User & { _id: string }): Promise<UserResponseDto> {
+    async find(@_User() { _id: userId }: User & { _id: string }): Promise<UserResponseDto> {
         const user = await this.usersService.findOne(userId);
         return new UserResponseDto(user);
     }
 
     @Patch()
-    async updateMyProfile(
+    async update(
         @_User() { _id: userId }: User & { _id: string },
-        @Body(CheckEmailIsUniquePipe) updateMeDto: UpdateMeDto
+        @Body(CheckEmailIsUniquePipe) updateMeDto: UpdateUsersLoggedinDto
     ): Promise<UserResponseDto> {
         const user = await this.usersService.update(userId.toString(), updateMeDto);
         return new UserResponseDto(user);

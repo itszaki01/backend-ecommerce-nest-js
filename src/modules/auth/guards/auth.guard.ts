@@ -20,7 +20,7 @@ export class AuthGuard implements CanActivate {
         }
         const decoded = this.tokenService.verify(token);
 
-        //3:Get user assign to the token
+        //3:Get user assigned to the token
         const user = await this.usersService.findOne(decoded.userId);
         
         //4:Check if password is chenged after token is assigned

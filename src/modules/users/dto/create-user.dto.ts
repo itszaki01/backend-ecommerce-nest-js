@@ -1,5 +1,5 @@
 import { IsEmail, IsEmpty, IsNotEmpty, IsOptional, IsPhoneNumber, IsString } from "class-validator";
-import { AddAddressDto } from "./add-address.dto";
+import { CreateUsersAddressDto } from "src/modules/users-addresses/dto/create-users-address.dto";
 
 export class CreateUserDto {
     @IsNotEmpty()
@@ -36,5 +36,5 @@ export class CreateUserDto {
     passwordChangedAt: Date;
 
     @IsEmpty()
-    addresses:AddAddressDto[]
+    addresses:CreateUsersAddressDto[]
 }

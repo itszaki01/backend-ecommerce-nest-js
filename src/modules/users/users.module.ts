@@ -1,12 +1,11 @@
-import { Module } from "@nestjs/common";
+import { Global, Module } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { UsersController } from "./users.controller";
 import { MongooseModule } from "@nestjs/mongoose";
 import { User, UserSchema } from "./schema/users.schema";
 import * as bcrypt from "bcrypt";
-import { UsersLoggedController } from "./users-logged.controller";
-import { UsersWishListController } from './users-wish-list.controller';
-import { UsersAddressesController } from './users-addresses.controller';
+
+@Global()
 @Module({
     imports: [
         MongooseModule.forFeatureAsync([
@@ -24,7 +23,7 @@ import { UsersAddressesController } from './users-addresses.controller';
             },
         ]),
     ],
-    controllers: [UsersLoggedController,UsersController, UsersWishListController, UsersAddressesController],
+    controllers: [ UsersController],
     providers: [UsersService],
     exports: [UsersService],
 })

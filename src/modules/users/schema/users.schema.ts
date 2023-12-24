@@ -1,9 +1,10 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { HydratedDocument } from "mongoose";
+import mongoose, { HydratedDocument } from "mongoose";
+import { Product } from "src/modules/products/schema/product.schema";
 
 export type UserDocument = HydratedDocument<User>;
 
-@Schema({ timestamps: true, toJSON: { versionKey: true } })
+@Schema({ timestamps: true})
 export class User {
     @Prop({
         required: [true, "Name is required"],
@@ -38,13 +39,16 @@ export class User {
     phone: string;
     @Prop({ default: "user" })
     role: "user" | "admin" | "manager";
-    // wishlist: [
-    //     {
-    //         type: mongoose.Schema.Types.ObjectId,
-    //         ref: "Product",
-    //     },
-    // ],
 
+    @Prop({
+        type: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Product",
+            },
+        ],
+    })
+    wishList: Product[];
 
     @Prop({
         type: [
@@ -58,7 +62,7 @@ export class User {
         ],
     })
     addresses: {
-        _id:string
+        _id: string;
         alias: string;
         details: string;
         phone: string;

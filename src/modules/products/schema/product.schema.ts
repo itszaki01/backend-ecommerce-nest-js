@@ -5,7 +5,7 @@ import { SubCategory } from "src/modules/sub-categories/schema/sub-category.sche
 
 export type ProductDocument = HydratedDocument<Product>;
 
-@Schema()
+@Schema({ timestamps: true, versionKey: false })
 export class Product {
     @Prop({
         required: [true, "Title is requires"],
@@ -15,6 +15,9 @@ export class Product {
 
     @Prop({ required: [true, "Slug is required"] })
     slug: string;
+
+    @Prop({ required: true })
+    price: number;
 
     @Prop({
         required: [true, "discreption is requires"],
@@ -31,13 +34,12 @@ export class Product {
     @Prop()
     imageCover: string;
 
-    @Prop()
-    images: string[];
-
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Category.name })
     category: Category;
 
-    @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: SubCategory.name }] })
+    @Prop({
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: SubCategory.name }],
+    })
     subCategories: SubCategory[];
 
     @Prop({ default: 0 })
