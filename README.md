@@ -4,9 +4,10 @@
 An intermediate project for an online store that includes all professional requirements such as categories, products, coupons, etc.
 
 ## Technologies Used:
-- TypeScript
-- Nest Js
-- Mongo Db
+- TypeScript.
+- Nest Js.
+- Mongo Db.
+- Results Pagination.
   
 ### Nest Js Used Technics:
 - Guards
